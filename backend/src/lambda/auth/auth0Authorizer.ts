@@ -1,21 +1,21 @@
-import { CustomAuthorizerEvent, CustomAuthorizerResult } from 'aws-lambda'
-import 'source-map-support/register'
-import { verify } from 'jsonwebtoken'
-import { createLogger } from '../../utils/logger'
-import Axios from 'axios'
-import { JwtPayload } from '../../auth/JwtPayload'
+import { CustomAuthorizerEvent, CustomAuthorizerResult } from 'aws-lambda';
+import 'source-map-support/register';
+import { verify } from 'jsonwebtoken';
+import Axios from 'axios';
+import { createLogger } from '../../utils/logger';
+import { JwtPayload } from '../../auth/JwtPayload';
 
-const logger = createLogger('auth')
+const logger = createLogger('auth');
 
-const jwksUrl = 'https://dev-39w-y5ot.auth0.com/.well-known/jwks.json'
+const jwksUrl = 'https://dev-39w-y5ot.auth0.com/.well-known/jwks.json';
 
 export const handler = async (
-  event: CustomAuthorizerEvent
+  event: CustomAuthorizerEvent,
 ): Promise<CustomAuthorizerResult> => {
-  logger.info('Authorizing a user', event.authorizationToken)
+  logger.info('Authorizing a user', event.authorizationToken);
   try {
-    const jwtToken = await verifyToken(event.authorizationToken)
-    logger.info('User was authorized', jwtToken)
+    const jwtToken = await verifyToken(event.authorizationToken);
+    logger.info('User was authorized', jwtToken);
 
     return {
       principalId: jwtToken.sub,
@@ -25,13 +25,13 @@ export const handler = async (
           {
             Action: 'execute-api:Invoke',
             Effect: 'Allow',
-            Resource: '*'
-          }
-        ]
-      }
-    }
+            Resource: '*',
+          },
+        ],
+      },
+    };
   } catch (e) {
-    logger.error('User not authorized', { error: e.message })
+    logger.error('User not authorized', { error: e.message });
 
     return {
       principalId: 'user',
@@ -41,35 +41,35 @@ export const handler = async (
           {
             Action: 'execute-api:Invoke',
             Effect: 'Deny',
-            Resource: '*'
-          }
-        ]
-      }
-    }
+            Resource: '*',
+          },
+        ],
+      },
+    };
   }
-}
+};
 
 async function verifyToken(authHeader: string): Promise<JwtPayload> {
-  const token = getToken(authHeader)
+  const token = getToken(authHeader);
   let cert;
   try {
     const response = await Axios.get(jwksUrl);
-    const pem = response['data']['keys'][0]['x5c'][0];
+    const pem = response.data.keys[0].x5c[0];
     cert = `-----BEGIN CERTIFICATE-----\n${pem}\n-----END CERTIFICATE-----`;
   } catch (e) {
-    return e
+    return e;
   }
 
-  return verify(token, cert, { algorithms: ['RS256'] }) as JwtPayload
+  return verify(token, cert, { algorithms: ['RS256'] }) as JwtPayload;
 }
 
 function getToken(authHeader: string): string {
-  if (!authHeader) throw new Error('No authentication header')
+  if (!authHeader) throw new Error('No authentication header');
 
-  if (!authHeader.toLowerCase().startsWith('bearer ')) throw new Error('Invalid authentication header')
+  if (!authHeader.toLowerCase().startsWith('bearer ')) throw new Error('Invalid authentication header');
 
-  const split = authHeader.split(' ')
-  const token = split[1]
+  const split = authHeader.split(' ');
+  const token = split[1];
 
-  return token
+  return token;
 }

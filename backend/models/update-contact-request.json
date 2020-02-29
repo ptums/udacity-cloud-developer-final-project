@@ -1,26 +1,26 @@
 {
-    "$schema" : "http://json-schema.org/draft-04/schema#",
-    "title": "update-todo",
-    "type":"object",
-    "properties": {
-        "name":{
-            "type":"string"
-        },
-        "phone" : {
-            "type": "string"
-        },
-        "email": {
-            "type": "string"
-        },
-        "address": {
-            "type": "string"
-        }
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "update-todo",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
     },
-    "required":[
-        "name",
-        "phone",
-        "email",
-        "address"
-    ],
-    "additionalProperties": false
-  }
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "phone",
+    "email",
+    "address"
+  ],
+  "additionalProperties": false
+};
