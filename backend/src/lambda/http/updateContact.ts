@@ -16,7 +16,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   const split = authorization.split(' ');
   const jwtToken = split[1];
 
-  logger.info('update to do item with the id: ', contactId);
+  logger.info('update contact with the id: ', contactId);
 
   const newContact = await UpdateContact(contactId, jwtToken, newContactInfo);
 
