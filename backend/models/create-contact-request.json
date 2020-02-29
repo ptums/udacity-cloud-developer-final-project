@@ -1,0 +1,18 @@
+{
+    "$schema" : "http://json-schema.org/draft-04/schema#",
+    "title": "create-todo",
+    "type":"object",
+    "properties": {
+        "name":{
+            "type":"string"
+        },
+        "phone":{
+            "type":"string"
+        }
+    },
+    "required":[
+        "name",
+        "phone"
+    ],
+    "additionalProperties": false
+  }
