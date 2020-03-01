@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Form, Button } from 'semantic-ui-react'
 import Auth from '../auth/Auth'
-import { patchContact } from '../api/phonebook-api'
+import { patchContact, singleContact } from '../api/phonebook-api'
 
 interface EditContactProps {
   match: {
@@ -17,13 +17,22 @@ interface EditContactState {
   uploadState: string
 }
 
-export class EditContact extends React.PureComponent<
-  EditContactProps,
-  EditContactState
-> {
+export class EditContact extends React.PureComponent<EditContactProps, EditContactState> {
   state: EditContactState = {
     formData: {},
     uploadState: ''
+  }
+
+  async componentDidMount() {
+    try {
+      const contactId = this.props.match.params.contactId
+      const idToken = this.props.auth.getIdToken()
+  
+      const formData = await singleContact(idToken, contactId)
+      this.setState({formData})
+    } catch (e) {
+      alert(`Failed to fetch contact: ${e.message}`)
+    }
   }
 
   handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,8 +48,15 @@ export class EditContact extends React.PureComponent<
     event.preventDefault()
     const { formData } = this.state
 
-    try {
-      if (!formData) {
+    const updatedContact = {
+      name: formData.name,
+      phone: formData.phone,
+      email: formData.email,
+      address: formData.address
+    };
+
+      try {
+      if (!updatedContact) {
         alert('Please fill out the form to update contact')
         return
       }
@@ -48,7 +64,7 @@ export class EditContact extends React.PureComponent<
       const contactId = this.props.match.params.contactId
       const idToken = this.props.auth.getIdToken()
       
-      await patchContact(idToken, contactId, formData)
+      await patchContact(idToken, contactId, updatedContact)
 
       this.setState({uploadState: `User ${contactId} has been updated!`})
     } catch (e) {
@@ -58,16 +74,18 @@ export class EditContact extends React.PureComponent<
   }
 
   render() {
+    const { formData } = this.state
     return (
       <div>
         <h1>Edit Contact</h1>
+        {(Object.keys(formData).length > 0) && this.currentContactInfo()}
 
         <Form onSubmit={this.handleSubmit}>
           <Form.Field>
             <label>Name</label>
             <input
               type="text"
-              accept="name"
+              name="name"
               placeholder="Edit user name"
               onChange={this.handleChange}
             />
@@ -105,11 +123,30 @@ export class EditContact extends React.PureComponent<
     return (
       <div>
         {(uploadState.length > 0 ) && <p>{uploadState}</p>}
-        <Button>
+        <Button
           type="submit"
         >
           Upload
         </Button>
+      </div>
+    )
+  }
+
+  currentContactInfo() {
+    const {  formData  } = this.state 
+    return (
+      <div>
+        <h2>Current Contact Information</h2>
+        <p>
+          Name: {formData.name || 'no name'} 
+          <br/>
+          Phone: {formData.phone || 'no phone'}
+          <br />
+          Email: {formData.email || 'no email'}
+          <br/>
+          Address: {formData.address || 'no address'}
+        </p>
+        <br/>
       </div>
     )
   }

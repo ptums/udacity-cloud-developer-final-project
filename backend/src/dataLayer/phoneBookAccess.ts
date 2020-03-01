@@ -1,17 +1,16 @@
-import * as AWS from 'aws-sdk';
-import * as AWSXRay from 'aws-xray-sdk';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import * as AWS  from 'aws-sdk'
+import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 import { Contact } from '../models/Contact';
-import { ContactUpdate } from '../models/ContactUpdate';
-
-const XAWS = AWSXRay.captureAWS(AWS);
+import { UpdateContact } from '../models/UpdateContact';
+;
 
 export class PhoneBookAccess {
   constructor(
-        private readonly docClient: DocumentClient = createDynamoDBClient(),
+        private readonly docClient: DocumentClient = new AWS.DynamoDB.DocumentClient(),
         private readonly phoneBookTable = process.env.PHONE_BOOK_TABLE,
         private readonly userIndex = process.env.USER_ID_INDEX,
+        private readonly contactIndex = process.env.CONTACT_ID_INDEX,
   ) { }
 
   async getAllContacts(userId: string): Promise <Contact[]> {
@@ -22,12 +21,26 @@ export class PhoneBookAccess {
       IndexName: this.userIndex,
       KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: {
-        userId,
+        ':userId':userId
       },
     }).promise();
 
     const items = result.Items;
     return items as Contact[];
+  }
+
+  async getSingleContact(contactId: string) {
+    const result = await this.docClient.query({
+      TableName: this.phoneBookTable,
+      IndexName: this.contactIndex,
+      KeyConditionExpression: 'contactId = :contactId',
+      ExpressionAttributeValues: {
+        ':contactId':contactId
+      },
+    }).promise();
+
+    const items = result.Items;
+    return items;
   }
 
   async createContact(contact: Contact): Promise<Contact> {
@@ -50,7 +63,7 @@ export class PhoneBookAccess {
     return contactId;
   }
 
-  async updateContact(contactId: string, updates: ContactUpdate): Promise<ContactUpdate> {
+  async updateContact(contactId: string, updates: UpdateContact): Promise<UpdateContact> {
     const {
       name, email, phone, address,
     } = updates;
@@ -59,12 +72,12 @@ export class PhoneBookAccess {
       Key: {
         contactId,
       },
-      UpdateExpression: 'set #namefield = :n, email = :e, phone = :p, address = :a',
+      UpdateExpression: 'set #namefield = :n, phone = :phone, email = :email, address = :address',
       ExpressionAttributeValues: {
         ':n': name,
-        ':e': email,
-        ':p': phone,
-        ':a': address,
+        ':email': email,
+        ':phone': phone,
+        ':address': address,
       },
       ExpressionAttributeNames: {
         '#namefield': 'name',

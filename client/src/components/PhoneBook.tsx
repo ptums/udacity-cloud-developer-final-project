@@ -5,11 +5,12 @@ import {
   Divider,
   Grid,
   Header,
-  Icon,
+  Card,
   Input,
   Loader,
   Form,
   Label,
+  Icon
 } from 'semantic-ui-react'
 
 import { createContact, deleteContact, getContacts } from '../api/phonebook-api'
@@ -27,7 +28,7 @@ interface ContactState {
   loadingContacts: boolean
 }
 
-export class Todos extends React.PureComponent<ContactProps, ContactState> {
+export class PhoneBook extends React.PureComponent<ContactProps, ContactState> {
   state: ContactState = {
     contacts: [],
     newContact: {},
@@ -94,10 +95,10 @@ export class Todos extends React.PureComponent<ContactProps, ContactState> {
   render() {
     return (
       <div>
-        <Header as="h1">Phone Book</Header>
+        <Header as="h1">Add New Contact</Header>
 
         {this.renderCreateContactInput()}
-
+        <Header as="h1">Contact List</Header>
         {this.renderContactsList()}
       </div>
     )
@@ -109,14 +110,17 @@ export class Todos extends React.PureComponent<ContactProps, ContactState> {
         <Grid.Column width={16}>
         <Form onSubmit={this.handleSubmit}>
           <Form.Field>
+            <br />
             <Label>Name</Label>
+            
             <Input
               type="text"
-              accept="name"
+              name="name"
               placeholder="Edit user name"
               onChange={this.handleChange}
             />
-            <Label>Phone</Label>
+            <br />
+            <Label>Phone</Label>            
             <Input
               type="text"
               name="phone"
@@ -156,61 +160,43 @@ export class Todos extends React.PureComponent<ContactProps, ContactState> {
   renderContactsList() {
     const { contacts } = this.state
     return (
-      <Grid padded>
-        {contacts.map((contact, pos) => {
+      <Card.Group>
+        {(contacts.length > 0) ? contacts.map((contact, pos) => {
           return (
-            <Grid.Row key={contact.contactId}>
-              <Grid.Column width={10} verticalAlign="middle">
-                {contact.name}
-              </Grid.Column>
-              <Grid.Column width={3} floated="right">
-                Phone: 
-                {contact.phone}
-              </Grid.Column>
-              {(contact.email) && (
-                <Grid.Column width={3} floated="right">
-                    Email:
-                    {contact.email}
-                </Grid.Column>
-              )}
-              {(contact.address) && (
-                <Grid.Column width={3} floated="right">
-                    Address:
-                    {contact.address}
-                </Grid.Column>
-              )}
-              <Grid.Column width={1} floated="right">
-                <Button
-                  icon
-                  color="blue"
-                  onClick={() => this.onEditButtonClick(contact.contactId)}
-                >
-                  <Icon name="pencil" />
-                </Button>
-              </Grid.Column>
-              <Grid.Column width={1} floated="right">
-                <Button
-                  icon
-                  color="red"
-                  onClick={() => this.onContactDelete(contact.contactId)}
-                >
-                  <Icon name="delete" />
-                </Button>
-              </Grid.Column>
-              <Grid.Column width={16}>
-                <Divider />
-              </Grid.Column>
-            </Grid.Row>
+            <Card key={contact.contactId}>
+              <Card.Content>
+                <Card.Header>{contact.name}</Card.Header>
+                <Card.Meta>
+                  Phone:
+                  {' '}
+                  {contact.phone}
+                </Card.Meta>
+                <Card.Description>
+                  {(contact.email) && (<><strong>Email: </strong> {contact.email}</>)}
+                  {(contact.address) && (<><br/><strong>Address: </strong> {contact.address}</>)}
+                </Card.Description>
+              </Card.Content>
+              <Card.Content extra>
+                <div className='ui two buttons'>
+                  <Button basic color='blue' onClick={() => this.onEditButtonClick(contact.contactId)}>
+                    <Icon name="pencil" />
+                  </Button>
+                  <Button basic color='red' onClick={() => this.onContactDelete(contact.contactId)}>
+                    <Icon name="delete" />
+                  </Button>
+                </div>
+              </Card.Content>
+            </Card>          
           )
-        })}
-      </Grid>
+        }) : <p>You currently don't have any contacts. Please add some!</p>}
+      </Card.Group>
     )
   }
 
   renderButton() {
     return (
       <div>
-        <Button>
+        <Button
           type="submit"
         >
           Create New Contact

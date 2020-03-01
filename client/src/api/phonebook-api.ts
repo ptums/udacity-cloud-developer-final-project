@@ -34,13 +34,19 @@ export async function patchContact(
   idToken: string,
   contactId: string,
   updatedContact: UpdateContactRequest,
-): Promise<void> {
+) {
+
+  console.log('api idtoken', idToken)
+  console.log('api contactId', contactId)
+  console.log('api updateContact')
+  console.log(updatedContact)
+  
   await Axios.patch(`${apiEndpoint}/phonebook/${contactId}`, JSON.stringify(updatedContact), {
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${idToken}`,
-    },
-  });
+      'Authorization': `Bearer ${idToken}`
+    }
+  })
 }
 
 export async function deleteContact(
@@ -53,4 +59,19 @@ export async function deleteContact(
       Authorization: `Bearer ${idToken}`,
     },
   });
+}
+
+export async function singleContact(
+  idToken: string,
+  contactId:string
+): Promise<void> {
+  const response = await Axios.get(`${apiEndpoint}/phonebook/contact/${contactId}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${idToken}`,
+    },
+  });
+
+  return response.data.items;
+
 }

@@ -41,10 +41,9 @@ export default class App extends Component<AppProps, AppState> {
         <Segment style={{ padding: '8em 0em' }} vertical>
           <Grid container stackable verticalAlign="middle">
             <Grid.Row>
-              <Grid.Column width={16}>
+              <Grid.Column>
                 <Router history={this.props.history}>
                   {this.generateMenu()}
-
                   {this.generateCurrentPage()}
                 </Router>
               </Grid.Column>
@@ -57,12 +56,13 @@ export default class App extends Component<AppProps, AppState> {
 
   generateMenu() {
     return (
-      <Menu>
+      <Menu secondary>
         <Menu.Item name="home">
           <Link to="/">Home</Link>
         </Menu.Item>
-
-        <Menu.Menu position="right">{this.logInLogOutButton()}</Menu.Menu>
+        <Menu.Menu>
+          {this.logInLogOutButton()}
+        </Menu.Menu>
       </Menu>
     );
   }
@@ -94,7 +94,6 @@ export default class App extends Component<AppProps, AppState> {
           exact
           render={(props) => <PhoneBook {...props} auth={this.props.auth} />}
         />
-
         <Route
           path="/phonebook/:contactId/edit"
           exact

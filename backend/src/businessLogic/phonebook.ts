@@ -1,6 +1,6 @@
 import * as uuid from 'uuid';
 import { Contact } from '../models/Contact';
-import { ContactUpdate } from '../models/ContactUpdate';
+import { UpdateContact } from '../models/UpdateContact';
 import { PhoneBookAccess } from '../dataLayer/phoneBookAccess';
 import { CreateContactRequest } from '../requests/CreateContactRequest';
 import { parseUserId } from '../auth/utils';
@@ -11,8 +11,7 @@ export async function GetAllContacts(jwtToken: string): Promise<Contact[]> {
   const userId = parseUserId(jwtToken);
 
   if (userId) {
-    const allContacts = await phoneBookAccess.getAllContacts(userId);
-    return allContacts;
+    return phoneBookAccess.getAllContacts(userId)
   }
 }
 
@@ -49,12 +48,22 @@ export async function DeleteContact(
 export async function UpdateContact(
   contactId: string,
   jwtToken: string,
-  updates: ContactUpdate,
-): Promise <ContactUpdate> {
+  updates: UpdateContact,
+): Promise <UpdateContact> {
   const userId = parseUserId(jwtToken);
 
   if (userId) {
-    const updateContact = await phoneBookAccess.updateContact(contactId, updates);
-    return updateContact;
+    return phoneBookAccess.updateContact(contactId, updates);
+  }
+}
+
+export async function GetSingleContact(
+  contactId: string,
+  jwtToken: string,
+) {
+  const userId = parseUserId(jwtToken);
+
+  if(userId) {
+    return phoneBookAccess.getSingleContact(contactId);
   }
 }
