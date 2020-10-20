@@ -6,7 +6,7 @@ This repository contains the code base to my solution for [Udacity's Cloud Devel
 
 [![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
 ![Website Down](https://camo.githubusercontent.com/3202fdb5566d5e0cef4ae932e4756973a1b6d3b9/68747470733a2f2f696d672e736869656c64732e696f2f776562736974652d75702d646f776e2d677265656e2d7265642f687474702f6d7966616b65776562736974657468617473686f756c646e6f7465786973742e61742e6c656173742e692e686f70652e737667)
-[![Known Vulnerabilities](https://snyk.io/test/github/ptums/udacity-cloud-developer-nanodegree-final-project/badge.svg)](https://snyk.io/test/github/ptums/udacity-cloud-developer-nanodegree-final-project)
+[![Known Vulnerabilities](https://snyk.io/test/github/ptums/udacity-cloud-developer-nanodegree-final-project/badge.svg)]
 
 
 
